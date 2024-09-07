@@ -9,9 +9,16 @@
     "start": "vercel dev"
   },
   "dependencies": {
-    "@vercel/node": "^3.2.12"
+    "@vercel/node": "^3.2.12",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.8.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.5.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"

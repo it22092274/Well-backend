@@ -1,7 +1,7 @@
 import { MongoClient, Db } from 'mongodb';
 
 // Ensure you set your MongoDB URI in environment variables
-const uri =  "mongodb+srv://root:root@uee.gj6k6.mongodb.net/?retryWrites=true&w=majority&appName=uee" || process.env.MONGODB_URI ;
+const uri = process.env.MONGODB_URI || "mongodb+srv://root:root@uee.gj6k6.mongodb.net/?retryWrites=true&w=majority&appName=uee"  ;
 
 // Create a new MongoClient instance
 const client = new MongoClient(uri);

@@ -1,10 +1,10 @@
 {
-    "version": 2,
-    "builds": [
-      { "src": "api/server.ts", "use": "@vercel/node" }
-    ],
-    "routes": [
-      { "src": "/api/(.*)", "dest": "/api/server.ts" }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    { "src": "api/server.ts", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/signup", "methods": ["POST"], "dest": "/api/routes/auth.ts" },
+    { "src": "/api/login", "methods": ["POST"], "dest": "/api/routes/auth.ts" }
+  ]
+}

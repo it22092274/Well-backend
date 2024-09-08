@@ -12,6 +12,8 @@ app.use(express.json());
 app.use(require('./auth/login'));
 app.use(require('./auth/signup'));
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 app.listen(process.env.PORT || 3000, () => {
     console.log('server is up and running')
 })

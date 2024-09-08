@@ -4,7 +4,6 @@
     { "src": "api/server.ts", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/auth/register", "methods": ["POST"], "dest": "/api/server.ts" },
-    { "src": "/api/auth/login", "methods": ["POST"], "dest": "/api/server.ts" }
+    { "src": "/api/(.*)", "dest": "/api/server.ts" }
   ]
 }

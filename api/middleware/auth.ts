@@ -1,22 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+const JWT_SECRET = process.env.JWT_SECRET || 'bloody_hell';
 
-  if (!authHeader) {
-    return res.status(401).send('No token provided');
-  }
+export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
 
-  const token = authHeader.split(' ')[1];
-
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-    if (err) {
-      return res.status(403).send('Invalid token');
-    }
-
-    // Attach the decoded token to the request
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
     (req as any).user = decoded;
     next();
-  });
-}
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid' });
+  }
+};

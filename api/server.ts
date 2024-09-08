@@ -10,8 +10,8 @@ const app = express();
 app.use(express.json()); // Use express.json() for parsing JSON
 
 // Use routes
-app.use('/api/login', loginRoute);  // Mount the login route
-app.use('/api/signup', signupRoute); // Mount the signup route
+app.use('/api/auth', loginRoute);  // Mount the login route
+app.use('/api/auth', signupRoute); // Mount the signup route
 
 // Default route to verify server is running
 app.get("/", (req, res) => res.send("Express on Vercel"));

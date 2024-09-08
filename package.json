@@ -4,7 +4,7 @@
   "description": "this is the backend of the mobile developed using react native for pregnant mothers",
   "main": "index.ts",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "nodemon ./api/server.ts",
     "build": "tsc",
     "start": "vercel dev"
   },
@@ -15,7 +15,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.1",
-    "mongoose": "^8.6.1"
+    "mongoose": "^8.6.1",
+    "nodemon": "^3.1.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

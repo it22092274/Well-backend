@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
 import connectDB from "../config/db";
 import loginRoute from "./auth/login"; // Import routes using ES6 syntax
 import signupRoute from "./auth/signup"; // Import routes using ES6 syntax
@@ -8,7 +10,11 @@ import memoryRoutes from "./memory";
 connectDB();
 
 const app = express();
-app.use(express.json()); // Use express.json() for parsing JSON
+app.use(cors());
+// app.use(express.json()); // Use express.json() for parsing JSON
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 
 

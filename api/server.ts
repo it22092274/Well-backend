@@ -1,6 +1,4 @@
 import express from "express";
-// import multer from "multer";
-import path from "path";
 import connectDB from "../config/db";
 import loginRoute from "./auth/login"; // Import routes using ES6 syntax
 import signupRoute from "./auth/signup"; // Import routes using ES6 syntax
@@ -12,8 +10,7 @@ connectDB();
 const app = express();
 app.use(express.json()); // Use express.json() for parsing JSON
 
-// Serve uploaded images
-app.use('/uploads', express.static('uploads')); // Serve uploaded images
+
 
 // Use routes
 app.use("/api/auth", loginRoute); // Mount the login route

@@ -18,7 +18,7 @@ const VaccineSchema = new mongoose.Schema(
     },
 
     vaccineMonth: {
-      type: Number,
+      type: [Number], // array ekak damu ekama vassinaaaaaaason eka gdk parawal walata ena nisa
       required: true,
     },
 

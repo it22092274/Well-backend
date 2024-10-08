@@ -4,7 +4,7 @@ const VaccinationScheduleSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
-      required: true,
+      required: false,
     },
     vaccineName: {  
         type: String,

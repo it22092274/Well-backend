@@ -23,7 +23,7 @@ app.use("/api/auth", signupRoute); // Mount the signup route
 app.use("/memory", memoryRoutes); // Memory routes
 
 
-app.use("/vaccination-schedules", vaccinationScheduleRoutes); 
+app.use("/vaccination", vaccinationScheduleRoutes); 
 
 
 

@@ -6,6 +6,7 @@ import signupRoute from "./auth/signup"; // Import routes using ES6 syntax
 import memoryRoutes from "./memory"; 
 import clinicRoute from "./clinic";
 import  ClinicScheduleRoute  from "./clinicSchedule";
+import vaccineRoute from "./vaccine";
 import vaccinationScheduleRoutes from "./vaccinationSchedule";
 
 // Create an instance of the Express application
@@ -26,7 +27,7 @@ app.use("/memory", memoryRoutes); // Memory routes
 app.use("/clinic", clinicRoute); // clinic routes
 app.use("/clinic-schedule", ClinicScheduleRoute); // clinic schedule routes
 
-
+app.use("/vaccine", vaccineRoute);
 app.use("/vaccination", vaccinationScheduleRoutes); 
 
 

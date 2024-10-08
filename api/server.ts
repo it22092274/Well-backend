@@ -3,7 +3,8 @@ import connectDB from "../config/db";
 import loginRoute from "./auth/login"; // Import routes using ES6 syntax
 import signupRoute from "./auth/signup"; // Import routes using ES6 syntax
 import memoryRoutes from "./memory"; 
-
+import clinicRoute from "./clinic";
+import  ClinicScheduleRoute  from "./clinicSchedule";
 // Initialize the database
 connectDB();
 
@@ -16,6 +17,8 @@ app.use(express.json()); // Use express.json() for parsing JSON
 app.use("/api/auth", loginRoute); // Mount the login route
 app.use("/api/auth", signupRoute); // Mount the signup route
 app.use("/memory", memoryRoutes); // Memory routes
+app.use("/clinic", clinicRoute); // clinic routes
+app.use("/clinic-schedule", ClinicScheduleRoute); // clinic schedule routes
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" });

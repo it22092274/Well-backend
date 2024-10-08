@@ -11,3 +11,13 @@ mongodb+srv://root:root@uee.gj6k6.mongodb.net/?retryWrites=true&w=majority&appNa
  "dev": "vercel dev",
 
  test token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGQ2YzNkYTBiM2EwZWFlMzkyNzFhYyIsImlhdCI6MTcyNTc4NzE5NywiZXhwIjoxNzI4Mzc5MTk3fQ.nu_OoRwYPoGrvnv_SUmpByapuRv0ljYLpkt7PCUz9Ac
+
+
+ # Setup ngrok locally
+
+ ```
+choco install ngrok
+ngrok config add-authtoken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+ngrok http 3000 --host-header="localhost:3000"
+ ```

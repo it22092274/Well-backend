@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 
 // Start the server
 app.listen(process.env.PORT || 3000, () => {
-    console.log("Server is up and running");
+    console.log("[server] Server is up and running. Listening on port 3000");
 });
 
 export default app;  

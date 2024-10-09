@@ -5,16 +5,26 @@ import fs from "fs";
 import { error } from "console";
 
 class MemoryController {
-  // Fetch all memories for the logged-in user
+  // Fetch all memories by query params
   getAllMemories = async (req: Request, res: Response) => {
     try {
-      const { userId } = req.query as { userId: string }; // Assuming userId is passed as a query parameter
+      console.log(`[getAllMemories] req.query: ${JSON.stringify(req.query)}`);
+      const { userId, isFavorite } = req.query as { userId: string, isFavorite?: string }; // Assuming userId is passed as a query parameter
 
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
 
-      const memories = await Memory.find({ user: userId }); // Filter by the user ID from query
+      // Construct the query object dynamically
+      const query: any = { user: userId };
+
+      // If isFavorite is provided in the query, add it to the query object
+      if (isFavorite !== undefined && isFavorite.toLowerCase() == 'true') {
+        query.isFavorite = true
+      }
+
+      const memories = await Memory.find(query);
+
       return res.status(200).json({ data: memories });
     } catch (error) {
       return res
@@ -23,9 +33,10 @@ class MemoryController {
     }
   };
 
-  // Fetch a single memory for the logged-in user
+  // Fetch a single memory by id
   getMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[getMemory] req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
 
       const memory = await Memory.findById(id); // Ensure it's the user's memory
@@ -45,7 +56,7 @@ class MemoryController {
   // Create a new memory
   createMemory = async (req: Request, res: Response) => {
     try {
-      console.log(`Incoming request: ${JSON.stringify(req.body)}`);
+      console.log(`[createMemory] Incoming request: ${JSON.stringify(req.body)}`);
       const {
         user,
         name,
@@ -106,6 +117,7 @@ class MemoryController {
   // Update a memory
   updateMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[updateMemory] Incoming request: ${JSON.stringify(req.body)} | req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
       const {
         user,
@@ -149,6 +161,7 @@ class MemoryController {
   // Delete a memory
   deleteMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[deleteMemory] req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
       const memory = await Memory.findByIdAndDelete(id);
 

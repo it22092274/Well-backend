@@ -6,7 +6,7 @@ import { error } from "console";
 
 class MemoryController {
   // Fetch all memories for the logged-in user
-  getAllMoments = async (req: Request, res: Response) => {
+  getAllMemories = async (req: Request, res: Response) => {
     try {
       const { userId } = req.query as { userId: string }; // Assuming userId is passed as a query parameter
 
@@ -14,8 +14,8 @@ class MemoryController {
         return res.status(400).json({ message: "User ID is required" });
       }
 
-      const moments = await Memory.find({ user: userId }); // Filter by the user ID from query
-      return res.status(200).json({ data: moments });
+      const memories = await Memory.find({ user: userId }); // Filter by the user ID from query
+      return res.status(200).json({ data: memories });
     } catch (error) {
       return res
         .status(500)
@@ -24,14 +24,14 @@ class MemoryController {
   };
 
   // Fetch a single memory for the logged-in user
-  getMoment = async (req: Request, res: Response) => {
+  getMemory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
 
-      const moment = await Memory.findById(id); // Ensure it's the user's memory
+      const memory = await Memory.findById(id); // Ensure it's the user's memory
 
-      if (moment) {
-        return res.status(200).json({ data: moment });
+      if (memory) {
+        return res.status(200).json({ data: memory });
       } else {
         return res.status(404).json({ message: "Memory not found" });
       }
@@ -43,7 +43,7 @@ class MemoryController {
   };
 
   // Create a new memory
-  createMoment = async (req: Request, res: Response) => {
+  createMemory = async (req: Request, res: Response) => {
     try {
       console.log(`Incoming request: ${JSON.stringify(req.body)}`);
       const {
@@ -74,7 +74,7 @@ class MemoryController {
           .status(400)
           .json({ success: false, message: "Invalid image format" });
       }
-      
+
       // Validate date
       const validDate = date ? new Date(date) : new Date();
       if (isNaN(validDate.getTime())) {
@@ -82,7 +82,7 @@ class MemoryController {
         return res.status(400).json({ message: "Invalid date provided" });
       }
 
-      const moment = new Memory({
+      const memory = new Memory({
         user: user,
         name,
         description,
@@ -93,8 +93,8 @@ class MemoryController {
         isFavorite,
       });
 
-      await moment.save();
-      return res.status(200).json({ message: "Memory created", data: moment });
+      await memory.save();
+      return res.status(200).json({ message: "Memory created", data: memory });
     } catch (error) {
       console.error("Error creating memory: ", error);
       return res
@@ -104,7 +104,7 @@ class MemoryController {
   };
 
   // Update a memory
-  updateMoment = async (req: Request, res: Response) => {
+  updateMemory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const {
@@ -122,20 +122,20 @@ class MemoryController {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      const moment = await Memory.findById(id);
-      if (moment) {
-        moment.name = name;
-        moment.description = description;
-        moment.image = image;
-        moment.feelings = feelings;
-        moment.time = time;
-        moment.date = date ? new Date(date) : moment.date;
-        moment.isFavorite = isFavorite;
+      const memory = await Memory.findById(id);
+      if (memory) {
+        memory.name = name;
+        memory.description = description;
+        memory.image = image;
+        memory.feelings = feelings;
+        memory.time = time;
+        memory.date = date ? new Date(date) : memory.date;
+        memory.isFavorite = isFavorite;
 
-        await moment.save();
+        await memory.save();
         return res
           .status(200)
-          .json({ message: "Memory updated", data: moment });
+          .json({ message: "Memory updated", data: memory });
       } else {
         return res.status(404).json({ message: "Memory not found" });
       }
@@ -147,12 +147,12 @@ class MemoryController {
   };
 
   // Delete a memory
-  deleteMoment = async (req: Request, res: Response) => {
+  deleteMemory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const moment = await Memory.findByIdAndDelete(id);
+      const memory = await Memory.findByIdAndDelete(id);
 
-      if (moment) {
+      if (memory) {
         return res.status(200).json({ message: "Memory deleted" });
       } else {
         return res.status(404).json({ message: "Memory not found" });

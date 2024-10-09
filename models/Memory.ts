@@ -29,7 +29,7 @@ const MemorySchema = new mongoose.Schema(
     },
     date: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
     isFavorite: {
       type: Boolean,

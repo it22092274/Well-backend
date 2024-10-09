@@ -2,6 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const MemorySchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -12,7 +17,7 @@ const MemorySchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
     feelings: {
       type: String,
@@ -24,7 +29,11 @@ const MemorySchema = new mongoose.Schema(
     },
     date: {
       type: Date,
-      default: Date.now,
+      required: true,
+    },
+    isFavorite: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

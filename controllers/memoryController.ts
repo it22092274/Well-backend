@@ -2,13 +2,30 @@ import express, { Request, Response } from "express";
 import { Memory } from "../models/Memory";
 import path from "path";
 import fs from "fs";
+import { error } from "console";
 
 class MemoryController {
-  getAllMoments = async (req: Request, res: Response) => {
+  // Fetch all memories by query params
+  getAllMemories = async (req: Request, res: Response) => {
     try {
-      const moments = await Memory.find();
-      return res.status(200).json({ data: moments });
-      res.send(moments);
+      console.log(`[getAllMemories] req.query: ${JSON.stringify(req.query)}`);
+      const { userId, isFavorite } = req.query as { userId: string, isFavorite?: string }; // Assuming userId is passed as a query parameter
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Construct the query object dynamically
+      const query: any = { user: userId };
+
+      // If isFavorite is provided in the query, add it to the query object
+      if (isFavorite !== undefined && isFavorite.toLowerCase() == 'true') {
+        query.isFavorite = true
+      }
+
+      const memories = await Memory.find(query);
+
+      return res.status(200).json({ data: memories });
     } catch (error) {
       return res
         .status(500)
@@ -16,12 +33,16 @@ class MemoryController {
     }
   };
 
-  getMoment = async (req: Request, res: Response) => {
+  // Fetch a single memory by id
+  getMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[getMemory] req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
-      const moment = await Memory.findById(id);
-      if (moment) {
-        return res.status(200).json({ data: moment });
+
+      const memory = await Memory.findById(id); // Ensure it's the user's memory
+
+      if (memory) {
+        return res.status(200).json({ data: memory });
       } else {
         return res.status(404).json({ message: "Memory not found" });
       }
@@ -32,68 +53,59 @@ class MemoryController {
     }
   };
 
-  createMoment = async (req: Request, res: Response) => {
+  // Create a new memory
+  createMemory = async (req: Request, res: Response) => {
     try {
-      console.log(`Incoming request: ${JSON.stringify(req.body)}`);
-      const { name, description, image, feelings, time, date } = req.body;
+      console.log(`[createMemory] Incoming request: ${JSON.stringify(req.body)}`);
+      const {
+        user,
+        name,
+        description,
+        image,
+        feelings,
+        time,
+        date,
+        isFavorite,
+      } = req.body;
 
       // Validate required fields
-      if (!name || !description || !feelings || !time || !image) {
+      if (!user || !name || !description || !feelings || !time) {
+        console.error(`Error: All fields are required except for image`)
         return res
           .status(400)
-          .json({ message: "All fields are required, including image" });
+          .json({ message: "All fields are required except for image" });
       }
 
       // Extract the Base64 string (data:image/jpeg;base64,...)
       const matches = image.match(/^data:image\/([a-zA-Z]+);base64,(.+)$/);
 
       if (!matches || matches.length !== 3) {
+        console.error(`Error: Invalid image format`)
         return res
           .status(400)
           .json({ success: false, message: "Invalid image format" });
       }
 
-      const fileType = matches[1]; // Image type (jpeg, png, etc.)
-      const base64Data = matches[2]; // Base64 data
-      const buffer = Buffer.from(base64Data, "base64"); // Convert Base64 to binary
-
-      // Define a unique filename (e.g., timestamp and file type)
-      const fileName = `${Date.now()}.${fileType}`;
-      const filePath = path.join(__dirname, "..", "uploads", fileName);
-
-      // Write the file to the 'uploads' directory
-      fs.writeFile(filePath, buffer, (err) => {
-        if (err) {
-          console.error("Error saving the file:", err);
-          return res
-            .status(500)
-            .json({ success: false, message: "File upload failed" });
-        }
-
-        // Respond with success and the file path
-        // res.json({
-        //   success: true,
-        //   message: "File uploaded successfully",
-        //   filePath: `/uploads/${fileName}`,
-        // });
-      });
-
       // Validate date
       const validDate = date ? new Date(date) : new Date();
       if (isNaN(validDate.getTime())) {
+        console.error(`Error: Invalid date provided`)
         return res.status(400).json({ message: "Invalid date provided" });
       }
 
-      const moment = new Memory({
+      const memory = new Memory({
+        user: user,
         name,
         description,
-        image,
+        image: image,
         feelings,
         time,
         date: validDate,
+        isFavorite,
       });
-      await moment.save();
-      return res.status(200).json({ message: "Memory created", data: moment });
+
+      await memory.save();
+      return res.status(200).json({ message: "Memory created", data: memory });
     } catch (error) {
       console.error("Error creating memory: ", error);
       return res
@@ -102,35 +114,40 @@ class MemoryController {
     }
   };
 
-  updateMoment = async (req: Request, res: Response) => {
+  // Update a memory
+  updateMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[updateMemory] Incoming request: ${JSON.stringify(req.body)} | req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
-      const { name, description, image, feelings, time, date } = req.body;
-   
-      if (
-        !name ||
-        !description ||
-        !feelings ||
-        !time ||
-        (!image && !req.body.image)
-      ) {
+      const {
+        user,
+        name,
+        description,
+        image,
+        feelings,
+        time,
+        date,
+        isFavorite,
+      } = req.body;
+
+      if (!user || !name || !description || !feelings || !time || !date) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      const moment = await Memory.findById(id);
-      if (moment) {
-        moment.name = name;
-        moment.description = description;
-        moment.image = image;
-        moment.feelings = feelings;
-        moment.time = time;
-        moment.date = date ? new Date(date) : moment.date;
+      const memory = await Memory.findById(id);
+      if (memory) {
+        memory.name = name;
+        memory.description = description;
+        memory.image = image;
+        memory.feelings = feelings;
+        memory.time = time;
+        memory.date = date ? new Date(date) : memory.date;
+        memory.isFavorite = isFavorite;
 
-       
-        await moment.save();
+        await memory.save();
         return res
           .status(200)
-          .json({ message: "Memory updated", data: moment });
+          .json({ message: "Memory updated", data: memory });
       } else {
         return res.status(404).json({ message: "Memory not found" });
       }
@@ -141,12 +158,14 @@ class MemoryController {
     }
   };
 
-  deleteMoment = async (req: Request, res: Response) => {
+  // Delete a memory
+  deleteMemory = async (req: Request, res: Response) => {
     try {
+      console.log(`[deleteMemory] req.params: ${JSON.stringify(req.params)}`);
       const { id } = req.params;
-      const moment = await Memory.findByIdAndDelete(id);
+      const memory = await Memory.findByIdAndDelete(id);
 
-      if (moment) {
+      if (memory) {
         return res.status(200).json({ message: "Memory deleted" });
       } else {
         return res.status(404).json({ message: "Memory not found" });

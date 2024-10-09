@@ -26,11 +26,10 @@ class MemoryController {
   // Fetch a single memory for the logged-in user
   getMoment = async (req: Request, res: Response) => {
     try {
-      
       const { id } = req.params;
 
       const moment = await Memory.findById(id); // Ensure it's the user's memory
-      
+
       if (moment) {
         return res.status(200).json({ data: moment });
       } else {
@@ -44,59 +43,50 @@ class MemoryController {
   };
 
   // Create a new memory
-  createMoment = async (req: Request, res: Response) => { 
+  createMoment = async (req: Request, res: Response) => {
     try {
       console.log(`Incoming request: ${JSON.stringify(req.body)}`);
-      const { user, name, description, image, feelings, time, date, isFavorite } = req.body;
+      const {
+        user,
+        name,
+        description,
+        image,
+        feelings,
+        time,
+        date,
+        isFavorite,
+      } = req.body;
 
       // Validate required fields
-      if (!user || !name || !description || !feelings || !time ) {
-        console.log(`user:${user} name:${name} description:${description} feelings:${feelings} time:${time}`);
-        console.log(`user:${!user} name:${!name} description:${!description} feelings:${!feelings} time:${!time}`);
+      if (!user || !name || !description || !feelings || !time) {
+        console.error(`Error: All fields are required except for image`)
         return res
           .status(400)
           .json({ message: "All fields are required except for image" });
-          
       }
 
-      let filePath; // Declare filePath here
-  
-      // Process image if provided
-      if (image) {
-        // Extract the Base64 string (data:image/jpeg;base64,...)
-        const matches = image.match(/^data:image\/([a-zA-Z]+);base64,(.+)$/);
-  
-        if (!matches || matches.length !== 3) {
-          return res
-            .status(400)
-            .json({ success: false, message: "Invalid image format" });
-        }
-  
-        const fileType = matches[1]; // Image type (jpeg, png, etc.)
-        const base64Data = matches[2]; // Base64 data
-        const buffer = Buffer.from(base64Data, "base64"); // Convert Base64 to binary
-  
-        // Define a unique filename (e.g., timestamp and file type)
-        const fileName = `${Date.now()}.${fileType}`;
-        filePath = path.join(__dirname, "..", "uploads", fileName);
-  
-        // Write the file to the 'uploads' directory
-        await fs.promises.writeFile(filePath, buffer); // Use fs.promises to handle promises
-  
+      // Extract the Base64 string (data:image/jpeg;base64,...)
+      const matches = image.match(/^data:image\/([a-zA-Z]+);base64,(.+)$/);
+
+      if (!matches || matches.length !== 3) {
+        console.error(`Error: Invalid image format`)
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid image format" });
       }
-  
+      
       // Validate date
       const validDate = date ? new Date(date) : new Date();
       if (isNaN(validDate.getTime())) {
+        console.error(`Error: Invalid date provided`)
         return res.status(400).json({ message: "Invalid date provided" });
       }
-  
 
       const moment = new Memory({
         user: user,
         name,
         description,
-        image: filePath ? `/uploads/${path.basename(filePath)}` : undefined,
+        image: image,
         feelings,
         time,
         date: validDate,
@@ -107,24 +97,32 @@ class MemoryController {
       return res.status(200).json({ message: "Memory created", data: moment });
     } catch (error) {
       console.error("Error creating memory: ", error);
-      return res.status(500).json({ message: "Failed to create memory", error });
+      return res
+        .status(500)
+        .json({ message: "Failed to create memory", error });
     }
   };
 
   // Update a memory
   updateMoment = async (req: Request, res: Response) => {
     try {
-
       const { id } = req.params;
-      const { user, name, description, image, feelings, time, date, isFavorite } = req.body;
-      
-    
+      const {
+        user,
+        name,
+        description,
+        image,
+        feelings,
+        time,
+        date,
+        isFavorite,
+      } = req.body;
 
       if (!user || !name || !description || !feelings || !time || !date) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      const moment = await Memory.findById(id); 
+      const moment = await Memory.findById(id);
       if (moment) {
         moment.name = name;
         moment.description = description;
@@ -135,21 +133,24 @@ class MemoryController {
         moment.isFavorite = isFavorite;
 
         await moment.save();
-        return res.status(200).json({ message: "Memory updated", data: moment });
+        return res
+          .status(200)
+          .json({ message: "Memory updated", data: moment });
       } else {
         return res.status(404).json({ message: "Memory not found" });
       }
     } catch (error) {
-      return res.status(500).json({ message: "Failed to update memory", error });
+      return res
+        .status(500)
+        .json({ message: "Failed to update memory", error });
     }
   };
 
   // Delete a memory
   deleteMoment = async (req: Request, res: Response) => {
     try {
-      
       const { id } = req.params;
-      const moment = await Memory.findByIdAndDelete(id); 
+      const moment = await Memory.findByIdAndDelete(id);
 
       if (moment) {
         return res.status(200).json({ message: "Memory deleted" });
@@ -160,7 +161,6 @@ class MemoryController {
       return res.status(500).json({ message: "Failed to delete memory" });
     }
   };
-
 }
 
 export default new MemoryController();

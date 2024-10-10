@@ -57,6 +57,7 @@ class MemoryController {
   createMemory = async (req: Request, res: Response) => {
     try {
       console.log(`[createMemory] Incoming request: ${JSON.stringify(req.body)}`);
+
       const {
         user,
         name,
@@ -69,11 +70,18 @@ class MemoryController {
       } = req.body;
 
       // Validate required fields
-      if (!user || !name || !description || !feelings || !time) {
-        console.error(`Error: All fields are required except for image`)
-        return res
-          .status(400)
-          .json({ message: "All fields are required except for image" });
+      const missingFields: string[] = []; // Collecting missing fields
+      if (!user) missingFields.push('user');
+      if (!name) missingFields.push('name');
+      if (!description) missingFields.push('description');
+      if (!feelings) missingFields.push('feelings');
+      if (!time) missingFields.push('time');
+      // If there are missing fields, respond with an error
+      if (missingFields.length > 0) {
+        console.error(`Error: Missing fields: ${missingFields.join(", ")}`);
+        return res.status(400).json({
+          message: `Missing required fields: ${missingFields.join(", ")}`,
+        });
       }
 
       // Extract the Base64 string (data:image/jpeg;base64,...)
@@ -118,6 +126,7 @@ class MemoryController {
   updateMemory = async (req: Request, res: Response) => {
     try {
       console.log(`[updateMemory] Incoming request: ${JSON.stringify(req.body)} | req.params: ${JSON.stringify(req.params)}`);
+
       const { id } = req.params;
       const {
         user,
@@ -130,19 +139,16 @@ class MemoryController {
         isFavorite,
       } = req.body;
 
-      if (!user || !name || !description || !feelings || !time || !date) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
-
       const memory = await Memory.findById(id);
       if (memory) {
-        memory.name = name;
-        memory.description = description;
-        memory.image = image;
-        memory.feelings = feelings;
-        memory.time = time;
-        memory.date = date ? new Date(date) : memory.date;
-        memory.isFavorite = isFavorite;
+        // Only update fields that are provided in the request body
+        if (name !== undefined) memory.name = name;
+        if (description !== undefined) memory.description = description;
+        if (image !== undefined) memory.image = image;
+        if (feelings !== undefined) memory.feelings = feelings;
+        if (time !== undefined) memory.time = time;
+        if (date !== undefined) memory.date = new Date(date); // Set date only if provided
+        if (isFavorite !== undefined) memory.isFavorite = isFavorite;
 
         await memory.save();
         return res

@@ -18,14 +18,6 @@ const VaccinationScheduleSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    notificationReminderTime: {
-      type: String,
-      required: true,
-    },
-    notificationReminderDays: {
-      type: Number,
-      required: true,
-    },
     status: {
       type: String,
       enum: ["pending", "completed", "missed"],

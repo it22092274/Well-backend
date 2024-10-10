@@ -27,10 +27,10 @@ class VaccinationScheduleController {
 
   createSchedule = async (req: Request, res: Response) => {
     try {
-      const { userId, vaccineName, scheduleTime, scheduleDate, notificationReminderTime, notificationReminderDays, status, notes } = req.body;
+      const { userId, vaccineName, scheduleTime, scheduleDate, status, notes } = req.body;
 
       // Validate required fields
-      if (!userId || !vaccineName || !scheduleTime || !scheduleDate || !notificationReminderTime || !notificationReminderDays || !status) {
+      if (!userId || !vaccineName || !scheduleTime || !scheduleDate || !status) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
@@ -45,8 +45,6 @@ class VaccinationScheduleController {
         vaccineName,
         scheduleTime,
         scheduleDate: validDate,
-        notificationReminderTime,
-        notificationReminderDays,
         status,
         notes,
       });
@@ -61,7 +59,7 @@ class VaccinationScheduleController {
   updateSchedule = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { userId, vaccineName, scheduleTime, scheduleDate, notificationReminderTime, notificationReminderDays, status, notes } = req.body;
+      const { userId, vaccineName, scheduleTime, scheduleDate, status, notes } = req.body;
 
       const schedule = await VaccinationSchedule.findById(id);
       if (schedule) {
@@ -69,8 +67,6 @@ class VaccinationScheduleController {
         schedule.vaccineName = vaccineName !== undefined ? vaccineName : schedule.vaccineName;
         schedule.scheduleTime = scheduleTime !== undefined ? scheduleTime : schedule.scheduleTime;
         schedule.scheduleDate = scheduleDate !== undefined ? new Date(scheduleDate) : schedule.scheduleDate;
-        schedule.notificationReminderTime = notificationReminderTime !== undefined ? notificationReminderTime : schedule.notificationReminderTime;
-        schedule.notificationReminderDays = notificationReminderDays !== undefined ? notificationReminderDays : schedule.notificationReminderDays;
         schedule.status = status !== undefined ? status : schedule.status;
         schedule.notes = notes !== undefined ? notes : schedule.notes;
 

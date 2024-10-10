@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const VaccinationScheduleSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
+      type: String, //use as an object id
       required: false,
     },
     vaccineName: {  

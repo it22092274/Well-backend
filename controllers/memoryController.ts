@@ -74,6 +74,7 @@ class MemoryController {
       if (!user) missingFields.push('user');
       if (!name) missingFields.push('name');
       if (!description) missingFields.push('description');
+      if (!image) missingFields.push('image');
       if (!feelings) missingFields.push('feelings');
       if (!time) missingFields.push('time');
       // If there are missing fields, respond with an error
